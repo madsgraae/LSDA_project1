@@ -14,7 +14,7 @@ class KMeans {
     //val l = Random.shuffle(points)
     //l.take(k)
     // Random.shuffle(points).take(k)
-    points.tail.take(k)
+    points.tail.take(k) // takeing from index 1 and K elements in a list 
 
   }
 
@@ -40,14 +40,34 @@ class KMeans {
   def classify(points: GenSeq[Point], means: GenSeq[Point]): GenMap[Point, GenSeq[Point]] = {
     val dict = points.groupBy(findClosest(_, means))
     // So iterate over means get (empty) list and return map
-    means.map(mean => mean -> dict.getOrElse(mean, GenSeq())).toMap
+    means.map(mean => 
+                mean -> 
+                  dict.getOrElse(mean, 
+                    GenSeq())).toMap
   }
 
   // Find average of points.
   // If the sequence of points is empty, return oldMean.
   // """RET"""
-  def findAverage(oldMean: Point, points: GenSeq[Point]): Point = {
-   ???
+  def findAverage(oldMean: Point, points: GenSeq[Point]): Point = points match {
+    case x :: xs  => new Point(
+      points.
+      tail.
+      foldLeft(
+        points.
+        head
+        .dims)(
+          (acc,v) => acc.zip(
+              v.dims
+            )
+            .map(t => t._1 + t._2))
+                .map(sums => sums / points.length
+                  )
+                )
+    case _ => println("OldMean")
+    oldMean
+
+    
   }
 
   // Get average of classification (using findAverage function) and update old cluster
@@ -112,6 +132,7 @@ object KMeansRunner {
     // val closest = kMeans.findClosest(testPoint, means)
     val classified = kMeans.classify(points, means)
     val (key, value) = classified.head
+    //var newMeans = update(classified,means)
     var newMean = kMeans.findAverage(key, value)
     //val oldMean = means.head
 
