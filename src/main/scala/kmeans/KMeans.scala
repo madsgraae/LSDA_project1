@@ -13,8 +13,8 @@ class KMeans {
   def initializeMeans(k: Int, points: Seq[Point], seed:Int): Seq[Point] = {
     //val l = Random.shuffle(points)
     //l.take(k)
-    // Random.shuffle(points).take(k)
-    points.tail.take(k) // takeing from index 1 and K elements in a list 
+    Random.shuffle(points).take(k)
+    //points.tail.take(k) // takeing from index 1 and K elements in a list 
 
   }
 
@@ -46,9 +46,6 @@ class KMeans {
                     GenSeq())).toMap
   }
 
-  // Find average of points.
-  // If the sequence of points is empty, return oldMean.
-  // """RET"""
   def findAverage(oldMean: Point, points: GenSeq[Point]): Point = points match {
     case x :: xs  => new Point(
       points.
@@ -64,35 +61,37 @@ class KMeans {
                 .map(sums => sums / points.length
                   )
                 )
-    case _ => println("OldMean")
+    case _ => 
     oldMean
-
-    
   }
 
   // Get average of classification (using findAverage function) and update old cluster
   // """RET"""
   def update(classified: GenMap[Point, GenSeq[Point]], oldMeans: GenSeq[Point]): GenSeq[Point] = {
-    ???
+    oldMeans.map(oldMean => findAverage(oldMean, classified(oldMean)))
   }
 
   // Check if the sum of the distance between the old and the new clusters are less than eta
   // """RET"""
   def converged(eta: Double)(oldMeans: GenSeq[Point], newMeans: GenSeq[Point]): Boolean = {
-  ???
+    (oldMeans zip newMeans).forall{
+  case (oldMean, newMean) => oldMean.squareDistance(newMean) <=  eta
+    }
   }
   // Clusters all points with initial cluster means
   // The function returns when the clusters converge less than eta
-//  @tailrec
-//  final def kMeans(points: GenSeq[Point], means: GenSeq[Point], eta: Double): GenSeq[Point] = {
-//    val classified = ???
-//    val newMeans = ???
-//    if (???) 
-//      ???  // Must be tail recursive
-//    else newMeans 
-
+@tailrec
+final def kMeans(points: GenSeq[Point],
+                   means: GenSeq[Point],
+                   eta: Double): GenSeq[Point] = {
+    val classified = classify(points, means)
+    val newMeans = update(classified, means)
+    if ((!converged(eta)(means, newMeans))) {
+      kMeans(points, newMeans, eta);
+    } 
+    else {newMeans}
+  }
 }
-
 object KMeansRunner {
   // Times execution of function
   def time[R](block: => R): R = {
@@ -106,10 +105,10 @@ object KMeansRunner {
   // Loads dataset and executes kmeans
   def main(args: Array[String]) {
     // Prepare dataset
-    val numPoints = 10
+    val numPoints = 500000
     val numDimensions = 3
     val eta = 0.01
-    val k = 5 // Number of clusters
+    val k = 3 // Number of clusters
     val seed = 7
 
     // You can choose between the two datasets in the comments below. 
@@ -120,7 +119,7 @@ object KMeansRunner {
     //  "src/main/resources/hofstede-nonull-vsm.tsv",
     //  DataLoader.hofstede)
     // Or generate a random dataset
-    val points = DataGenerator.genPoints(numPoints, numDimensions, seed)
+    val points = DataGenerator.genPoints(numPoints, numDimensions, seed) //Outcommon this 
 
     // Initialize a KMeans object and initialize means
     val kMeans = new KMeans()
@@ -130,25 +129,29 @@ object KMeansRunner {
 
     // val testPoint = points.head
     // val closest = kMeans.findClosest(testPoint, means)
-    val classified = kMeans.classify(points, means)
-    val (key, value) = classified.head
+    //val classified = kMeans.classify(points, means)
+    //val (key, value) = classified.head
     //var newMeans = update(classified,means)
-    var newMean = kMeans.findAverage(key, value)
+    //var newMean = kMeans.findAverage(key, value)
     //val oldMean = means.head
 
     // ----------------------------------/
     
     // Execute kMeans sequentially and time the execution
-    //time{
-      //kMeans.kMeans(points, means, eta)
-    //}
-
+    println("Sequential Version")
+    time{
+      kMeans.kMeans(points, means, eta)
+    }
+    println()
+    val parPoints = points.par
+    val parMeans = means.par
     // Execute kMeans in parallel and time the execution
-    //time{
-      //val parPoints = points.par
-      //val parMeans = means.par
-      //kMeans.kMeans(parPoints, parMeans, eta)
-    //}
+    println("Parallel version")
+    time{
+      
+      kMeans.kMeans(parPoints, parMeans, eta)
+    }
+    println()
 
   }
 

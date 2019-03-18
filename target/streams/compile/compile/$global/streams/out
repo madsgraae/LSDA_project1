@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/Users/mads/Documents/ITU/4_semester/large_scale_data_analysis/git/LSDA_project1/src/main/scala/kmeans/KMeans.scala:135:20: not found: value update[0m
-[0m[[0m[31merror[0m] [0m[0m    var newMeans = update(classified,means)[0m
-[0m[[0m[31merror[0m] [0m[0m                   ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/mads/Documents/ITU/4_semester/large_scale_data_analysis/git/LSDA_project1/src/main/scala/kmeans/KMeans.scala:112:5: illegal start of simple expression[0m
+[0m[[0m[31merror[0m] [0m[0m    val seed = 7[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
