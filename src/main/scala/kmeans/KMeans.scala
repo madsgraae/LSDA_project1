@@ -21,7 +21,7 @@ class KMeans {
 
   // Find the cluster ("means") that are closest to the point p. 
   // Hint: squareDistance is defined in Point
-  // """RET"""
+
   def findClosest(p: Point, means: GenSeq[Point]): Point = {
     var closestMean = means.head
     
@@ -36,7 +36,6 @@ class KMeans {
   // Cluster all points
   // Hint: All points must be assigned to a mean point.
   // Remember to handle empty cases.
-  // """RET"""
   def classify(points: GenSeq[Point], means: GenSeq[Point]): GenMap[Point, GenSeq[Point]] = {
     val dict = points.groupBy(findClosest(_, means))
     // So iterate over means get (empty) list and return map
@@ -66,13 +65,12 @@ class KMeans {
   }
 
   // Get average of classification (using findAverage function) and update old cluster
-  // """RET"""
+
   def update(classified: GenMap[Point, GenSeq[Point]], oldMeans: GenSeq[Point]): GenSeq[Point] = {
     oldMeans.map(oldMean => findAverage(oldMean, classified(oldMean)))
   }
 
   // Check if the sum of the distance between the old and the new clusters are less than eta
-  // """RET"""
   def converged(eta: Double)(oldMeans: GenSeq[Point], newMeans: GenSeq[Point]): Boolean = {
     (oldMeans zip newMeans).forall{
   case (oldMean, newMean) => oldMean.squareDistance(newMean) <=  eta
